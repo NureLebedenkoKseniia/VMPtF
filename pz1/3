@@ -1,0 +1,5 @@
+def isPalindrom():
+    inputString = input("Enter a string: ")
+    return inputString == inputString [::-1]
+if __name__ == "__main__":
+    print(isPalindrom())

@@ -1,0 +1,17 @@
+import requests
+
+
+def get_api_data():
+    url = "https://jsonplaceholder.typicode.com/todos/1"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  
+        return response.json() 
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching API data: {e}")
+        return {"error": str(e)}
+if __name__ == "__main__":
+    recievedData = get_api_data()
+    print("user id:", recievedData.get("userId"))
+    print("title:", recievedData.get("title"))
+    print("completed:", recievedData.get("completed"))  

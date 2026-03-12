@@ -1,0 +1,6 @@
+def reverseString ():
+    inputString = input("Enter a string: ")
+    reversedString = inputString [::-1]
+    return reversedString
+if __name__ == "__main__":
+    print(reverseString())  
