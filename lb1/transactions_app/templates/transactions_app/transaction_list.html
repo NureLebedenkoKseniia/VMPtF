@@ -1,0 +1,114 @@
+{% extends 'transactions_app/base.html' %}
+
+{% block content %}
+<style>
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: #181818;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        align-items: flex-end;
+    }
+    .filter-bar div {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .filter-bar input, .filter-bar select {
+        padding: 6px 10px;
+        background: #222;
+        border: 1px solid #444;
+        color: white;
+        border-radius: 4px;
+    }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+    <h2>Список транзакцій</h2>
+    <a href="{% url 'transaction_create' %}" class="btn">+ Нова транзакція</a>
+</div>
+
+<!-- Level 3 Filters Bar -->
+<form method="GET" action="{% url 'transaction_list' %}" class="filter-bar">
+    <div>
+        <label style="font-size: 12px; color: #aaa;">Опис</label>
+        <input type="text" name="q" placeholder="Пошук за описом..." value="{{ q }}">
+    </div>
+    <div>
+        <label style="font-size: 12px; color: #aaa;">Категорія</label>
+        <select name="category">
+            <option value="">Всі категорії</option>
+            {% for cat in categories %}
+            <option value="{{ cat.pk }}" {% if selected_category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label style="font-size: 12px; color: #aaa;">Тип</label>
+        <select name="type">
+            <option value="">Будь-який</option>
+            <option value="debit" {% if selected_type == 'debit' %}selected{% endif %}>Дебет (Дохід)</option>
+            <option value="credit" {% if selected_type == 'credit' %}selected{% endif %}>Кредит (Витрата)</option>
+        </select>
+    </div>
+    <div>
+        <label style="font-size: 12px; color: #aaa;">Сортування</label>
+        <select name="sort">
+            <option value="-date" {% if selected_sort == '-date' %}selected{% endif %}>Дата (нові спочатку)</option>
+            <option value="date" {% if selected_sort == 'date' %}selected{% endif %}>Дата (старі спочатку)</option>
+            <option value="-amount" {% if selected_sort == '-amount' %}selected{% endif %}>Сума (спадання)</option>
+            <option value="amount" {% if selected_sort == 'amount' %}selected{% endif %}>Сума (зростання)</option>
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="btn" style="padding: 7px 15px;">Фільтрувати</button>
+    </div>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Опис</th>
+            <th>Категорія</th>
+            <th>Тип</th>
+            <th>Сума (грн)</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tx in transactions %}
+        <tr>
+            <td>{{ tx.date|date:"d.m.Y" }}</td>
+            <td>{{ tx.description }}</td>
+            <td>
+                {% if tx.category %}
+                    <span style="background: #333; padding: 2px 6px; border-radius: 4px; font-size: 12px;">{{ tx.category.name }}</span>
+                {% else %}
+                    <span style="color: #666;">Без категорії</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if tx.type == 'debit' %}
+                    <span class="text-success" style="font-weight: bold;">Дохід</span>
+                {% else %}
+                    <span class="text-danger" style="font-weight: bold;">Витрата</span>
+                {% endif %}
+            </td>
+            <td style="font-weight: bold;">{{ tx.amount|floatformat:2 }}</td>
+            <td>
+                <a href="{% url 'transaction_edit' tx.pk %}" style="color: #8b5cf6; text-decoration: none; margin-right: 10px;">Редагувати</a>
+                <a href="{% url 'transaction_delete' tx.pk %}" style="color: #ef4444; text-decoration: none;">Видалити</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" style="text-align: center; color: #666; padding: 20px;">Жодних транзакцій не знайдено.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

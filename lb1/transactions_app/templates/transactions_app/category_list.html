@@ -1,0 +1,86 @@
+{% extends 'transactions_app/base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2>Перегляд за категоріями</h2>
+    <a href="{% url 'category_create' %}" class="btn">+ Нова категорія</a>
+</div>
+
+{% for item in category_data %}
+    <div class="card" style="margin-bottom: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 12px;">
+            <h3 style="margin: 0; color: #a78bfa;">{{ item.category.name }}</h3>
+            <span style="font-size: 13px; color: #aaa;">Місячний ліміт: <strong>{{ item.category.monthly_limit }} грн</strong></span>
+        </div>
+        <p style="font-size: 14px; color: #888; margin-bottom: 12px;">{{ item.category.description|default:"Опис відсутній" }}</p>
+        
+        {% if item.transactions.exists %}
+            <table style="margin-top: 5px;">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Опис</th>
+                        <th>Тип</th>
+                        <th>Сума (грн)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in item.transactions %}
+                    <tr>
+                        <td>{{ tx.date|date:"d.m.Y" }}</td>
+                        <td>{{ tx.description }}</td>
+                        <td>
+                            {% if tx.type == 'debit' %}
+                                <span class="text-success">Дохід</span>
+                            {% else %}
+                                <span class="text-danger">Витрата</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-weight: bold;">{{ tx.amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div style="text-align: right; margin-top: 10px; font-size: 14px; color: #aaa;">
+                Всього витрачено у цій категорії: <strong class="text-danger">{{ item.total_spent }} грн</strong>
+            </div>
+        {% else %}
+            <p style="font-style: italic; color: #666; font-size: 14px;">Немає транзакцій у цій категорії.</p>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Категорії не створені.</p>
+{% endfor %}
+
+{% if uncategorized_transactions.exists %}
+    <div class="card" style="border-color: #444;">
+        <h3 style="border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 12px; color: #666;">Без категорії</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Опис</th>
+                    <th>Тип</th>
+                    <th>Сума (грн)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in uncategorized_transactions %}
+                <tr>
+                    <td>{{ tx.date|date:"d.m.Y" }}</td>
+                    <td>{{ tx.description }}</td>
+                    <td>
+                        {% if tx.type == 'debit' %}
+                            <span class="text-success">Дохід</span>
+                        {% else %}
+                            <span class="text-danger">Витрата</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-weight: bold;">{{ tx.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock %}

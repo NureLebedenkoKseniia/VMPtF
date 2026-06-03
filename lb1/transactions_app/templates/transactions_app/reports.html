@@ -1,0 +1,112 @@
+{% extends 'transactions_app/base.html' %}
+
+{% block content %}
+<style>
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    .stat-box {
+        background: #181818;
+        padding: 20px;
+        border-radius: 6px;
+        border: 1px solid #333;
+        text-align: center;
+    }
+    .stat-box h4 {
+        margin: 0 0 10px 0;
+        color: #aaa;
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+    .stat-box div {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .budget-progress-row {
+        margin-bottom: 12px;
+    }
+    .progress-bar-bg {
+        width: 100%;
+        height: 10px;
+        background: #333;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    .progress-bar-fill {
+        height: 100%;
+        border-radius: 5px;
+    }
+</style>
+
+<h2>Бюджетна аналітика</h2>
+<p style="color: #888; font-size: 14px; margin-bottom: 20px;">Моніторинг доходів, витрат та лімітів по категоріях.</p>
+
+<div class="stats-row">
+    <div class="stat-box">
+        <h4>Усього доходів (Дебет)</h4>
+        <div class="text-success">+{{ total_income|floatformat:2 }} грн</div>
+    </div>
+    <div class="stat-box">
+        <h4>Усього витрат (Кредит)</h4>
+        <div class="text-danger">-{{ total_expense|floatformat:2 }} грн</div>
+    </div>
+    <div class="stat-box" style="border-color: #8b5cf6;">
+        <h4>Чистий баланс</h4>
+        <div class="{% if balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+            {{ balance|floatformat:2 }} грн
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+    <!-- Budget Limits Progress -->
+    <div class="card">
+        <h3 style="margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 8px; color: #a78bfa;">Ліміти по категоріях</h3>
+        {% for cat in budget_data %}
+            <div class="budget-progress-row">
+                <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                    <span>{{ cat.name }}</span>
+                    <span>
+                        {{ cat.actual|floatformat:2 }} / <strong>{{ cat.limit|floatformat:2 }} грн</strong>
+                        ({{ cat.percentage }}%)
+                    </span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" 
+                         style="width: {{ cat.percentage }}%; 
+                                background: {% if cat.actual > cat.limit %}#ef4444{% else %}#8b5cf6{% endif %};">
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p style="font-style: italic; color: #666;">Категорії з лімітами відсутні.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Income vs Expense Visual simple SVG Chart -->
+    <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <h3 style="margin-top: 0; margin-bottom: 15px; width: 100%; border-bottom: 1px solid #333; padding-bottom: 8px; color: #a78bfa;">Співвідношення</h3>
+        
+        <svg width="200" height="220" style="background: #181818; border-radius: 6px; padding: 10px;">
+            <!-- Background grids -->
+            <line x1="20" y1="180" x2="180" y2="180" stroke="#333" stroke-width="2"/>
+            <line x1="20" y1="105" x2="180" y2="105" stroke="#222" stroke-dasharray="2,2"/>
+            <line x1="20" y1="30" x2="180" y2="30" stroke="#222" stroke-dasharray="2,2"/>
+
+            <!-- Income bar -->
+            <rect x="40" y="{{ inc_y }}" width="40" height="{{ inc_height }}" fill="#10b981" rx="2" />
+            <text x="60" y="195" fill="#aaa" font-size="11" text-anchor="middle">Доходи</text>
+            <text x="60" y="{{ inc_y|add:"-5" }}" fill="#10b981" font-size="10" font-weight="bold" text-anchor="middle">{{ total_income|floatformat:0 }}</text>
+
+            <!-- Expense bar -->
+            <rect x="120" y="{{ exp_y }}" width="40" height="{{ exp_height }}" fill="#ef4444" rx="2" />
+            <text x="140" y="195" fill="#aaa" font-size="11" text-anchor="middle">Витрати</text>
+            <text x="140" y="{{ exp_y|add:"-5" }}" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="middle">{{ total_expense|floatformat:0 }}</text>
+        </svg>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'transactions_app/base.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto; background: #181818; padding: 25px; border-radius: 8px; border: 1px solid #333; text-align: center;">
+    <h2 style="color: #ef4444; margin-top: 0;">Підтвердження видалення</h2>
+    <p style="margin: 20px 0;">Ви впевнені, що хочете видалити транзакцію:<br>
+        <strong>"{{ transaction.description }}"</strong> на суму <strong>{{ transaction.amount }} грн</strong>?
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" style="padding: 10px 20px;">Так, видалити</button>
+        <a href="{% url 'transaction_list' %}" class="btn" style="background: #333; padding: 10px 20px; margin-left: 10px;">Скасувати</a>
+    </form>
+</div>
+{% endblock %}
