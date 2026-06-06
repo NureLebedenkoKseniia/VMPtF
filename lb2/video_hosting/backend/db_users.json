@@ -1,0 +1,26 @@
+{
+  "Kseniya": {
+    "role": "admin",
+    "subscriptions": [
+      "Професор IT",
+      "Kseniya"
+    ],
+    "likedVideos": []
+  },
+  "Ivan": {
+    "role": "creator",
+    "subscriptions": [],
+    "likedVideos": []
+  },
+  "Petro": {
+    "role": "viewer",
+    "subscriptions": [
+      "Blender Foundation",
+      "Kseniya",
+      "Анімаційна Студія"
+    ],
+    "likedVideos": [
+      "video_1"
+    ]
+  }
+}
