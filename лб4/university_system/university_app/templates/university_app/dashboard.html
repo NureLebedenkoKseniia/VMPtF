@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система керування університетом - ЛБ4</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-paper: #fcfaf3; /* Classic book page color (warm cream) */
+            --bg-card: #ffffff;  /* White book sheet */
+            --bg-header: #f2ebd9; /* Vintage parchment/hardcover card */
+            --text-primary: #2b2520; /* Ink black/charcoal */
+            --text-secondary: #6b6055; /* Soft pencil lead / graphite */
+            --border-color: #dcd3c5; /* Cream-colored book edge */
+            --border-focus: #8a2323; /* Classic academic crimson */
+            --glass-bg: var(--bg-card);
+            --glass-border: var(--border-color);
+            
+            --primary: #8a2323; /* Deep burgundy wine / academic seals */
+            --primary-hover: #6c1919;
+            --accent: #b8860b; /* Golden brass / old leather gilding */
+            --success: #2d6a4f; /* Scholarly green */
+            --success-glow: #e8f5e9;
+            --danger: #9e2a2b; /* Correction red ink */
+            --danger-glow: #fdf0f0;
+            --warning: #cc8b00; /* Amber quill-ink */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lora', Georgia, serif;
+            background-color: var(--bg-paper);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--bg-header);
+            border-bottom: 2px solid var(--border-color);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-badge {
+            background: var(--primary);
+            color: #ffffff;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 2px;
+            letter-spacing: 1.5px;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            color: var(--text-primary);
+        }
+
+        .student-info {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            text-align: right;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .student-info span {
+            color: var(--primary);
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1300px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(220, 211, 197, 0.4);
+            pointer-events: none;
+            border-radius: 2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-paper);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .nav-btn.active {
+            background: var(--bg-header);
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            padding-left: calc(1rem - 3px);
+        }
+
+        .btn {
+            background: var(--primary);
+            border: 1px solid var(--primary-hover);
+            color: white;
+            padding: 0.6rem 1.25rem;
+            border-radius: 4px;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            box-shadow: 1px 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-paper);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-header);
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: #7d2021;
+        }
+
+        .btn-danger:hover {
+            background: #7d2021;
+        }
+
+        /* Content Area */
+        .content-panel {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .content-panel.active {
+            display: flex;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.75rem;
+        }
+
+        .panel-title {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--primary);
+            background: none;
+            -webkit-text-fill-color: initial;
+        }
+
+        /* Metrics / Performance Header */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+            position: relative;
+        }
+        
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(220, 211, 197, 0.3);
+            pointer-events: none;
+            border-radius: 2px;
+        }
+
+        .metric-label {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .metric-value.success {
+            color: var(--success);
+        }
+
+        .metric-value.info {
+            color: var(--primary);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 2px;
+            font-size: 0.8rem;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-weight: 700;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge-cache-hit {
+            background: var(--success-glow);
+            color: var(--success);
+            border-color: rgba(46, 107, 64, 0.3);
+        }
+
+        .badge-cache-miss {
+            background: var(--danger-glow);
+            color: var(--danger);
+            border-color: rgba(158, 42, 43, 0.3);
+        }
+
+        /* Forms styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        input, select, textarea {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.6rem;
+            border-radius: 4px;
+            font-family: 'Lora', Georgia, serif;
+            font-size: 0.95rem;
+            transition: all 0.15s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(138, 35, 35, 0.15);
+        }
+
+        /* Grid Lists */
+        .cards-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .item-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.25rem;
+            transition: all 0.15s ease;
+            position: relative;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0.8;
+        }
+
+        .item-card:hover {
+            transform: translateY(-1px);
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .item-code {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-title {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .item-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .item-meta {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-meta span strong {
+            color: var(--text-primary);
+            font-style: normal;
+        }
+
+        /* Table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: var(--bg-header);
+            color: var(--text-primary);
+            padding: 0.85rem 1rem;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        tr:hover {
+            background: var(--bg-paper);
+        }
+
+        .score-pill {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 2px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .score-pill.high {
+            background: var(--success-glow);
+            color: var(--success);
+            border-color: rgba(46, 107, 64, 0.2);
+        }
+
+        .score-pill.mid {
+            background: #fffcf0;
+            color: var(--warning);
+            border-color: rgba(204, 139, 0, 0.2);
+        }
+
+        .score-pill.low {
+            background: var(--danger-glow);
+            color: var(--danger);
+            border-color: rgba(158, 42, 43, 0.2);
+        }
+
+        /* SQL Log Viewer & Typewriter terminal styling */
+        .sql-log-card {
+            background: #fdfcf9;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .sql-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .sql-title {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sql-list {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: #2b2520;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .sql-item {
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-paper);
+            border-radius: 2px;
+            border: 1px dashed var(--border-color);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Transaction Log area */
+        .tx-log-console {
+            background: #fcfbf9;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.25rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            min-height: 180px;
+            max-height: 350px;
+            overflow-y: auto;
+            color: #2b2520;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .tx-line {
+            display: flex;
+            gap: 0.75rem;
+            border-bottom: 1px dotted rgba(216, 207, 196, 0.4);
+            padding-bottom: 0.2rem;
+        }
+
+        .tx-time {
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .tx-type-info {
+            color: #4a6fa5;
+        }
+
+        .tx-type-success {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .tx-type-danger {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .tx-type-warn {
+            color: var(--warning);
+            font-weight: bold;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateY(150%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            font-family: 'EB Garamond', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast-success {
+            border-color: var(--success);
+            background: var(--success-glow);
+        }
+
+        .toast-error {
+            border-color: var(--danger);
+            background: var(--danger-glow);
+        }
+
+        /* Tab panels layout helper */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1000px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-badge">NURE</div>
+            <h1>Університетська система</h1>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="glass-card">
+                <nav class="nav-menu">
+                    <button class="nav-btn active" onclick="switchTab('courses-tab', this)">
+                        📚 Курси та лекції
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('grades-tab', this); loadGradesData();">
+                        📊 Оцінки та студенти
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('transactions-tab', this)">
+                        🛡️ Атомарні транзакції
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="glass-card">
+                <h3 style="font-size:0.95rem; margin-bottom: 0.75rem; color: var(--accent);">База даних</h3>
+                <p style="font-size:0.8rem; color: var(--text-secondary); margin-bottom:1rem; line-height: 1.4;">
+                    Натисніть кнопку нижче, щоб очистити і заповнити базу даних тестовими даними в транзакції.
+                </p>
+                <button class="btn btn-secondary" style="width:100%" onclick="seedDatabase()">
+                    ⚡ Ініціалізувати БД
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            
+            <!-- PANEL 1: COURSES -->
+            <div id="courses-tab" class="content-panel active">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Університетські курси</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top:0.25rem;">
+                            Рівень 3: Кешування списку курсів (locmem) та Select Related оптимізація.
+                        </p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="fetchCourses()">🔄 Оновити</button>
+                </div>
+
+                <!-- Caching Performance Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">Джерело даних</span>
+                        <div id="course-cache-status" class="metric-value info">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Кількість SQL-запитів до БД</span>
+                        <div id="course-query-count" class="metric-value success">-</div>
+                    </div>
+                </div>
+
+                <div class="grid-layout">
+                    <!-- Courses grid list -->
+                    <div>
+                        <div id="courses-list" class="cards-list">
+                            <!-- Dynamically loaded -->
+                        </div>
+                    </div>
+
+                    <!-- Add Course Form -->
+                    <div class="glass-card">
+                        <h3 style="font-size:1.1rem; margin-bottom:1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">Додати новий курс</h3>
+                        <form id="add-course-form" onsubmit="addCourse(event)">
+                            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                                <div class="form-group">
+                                    <label for="course-title">Назва курсу</label>
+                                    <input type="text" id="course-title" required placeholder="Наприклад: Проектування ПЗ">
+                                </div>
+                                <div class="form-group">
+                                    <label for="course-code">Код курсу</label>
+                                    <input type="text" id="course-code" required placeholder="Наприклад: CS-101">
+                                </div>
+                                <div class="form-group">
+                                    <label for="course-teacher">Викладач</label>
+                                    <select id="course-teacher" required>
+                                        <option value="">Завантаження...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="course-desc">Опис курсу</label>
+                                    <textarea id="course-desc" rows="3" placeholder="Стислий опис дисципліни..."></textarea>
+                                </div>
+                                <button type="submit" class="btn" style="margin-top:0.5rem;">Створити курс</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- SQL inspector -->
+                <div class="sql-log-card">
+                    <div class="sql-header">
+                        <span class="sql-title">Аналізатор SQL-запитів до бази даних (Django ORM select_related)</span>
+                        <span style="font-size:0.75rem; color: var(--text-secondary);">Попереджує проблему N+1, підтягуючи Teachers одним Join</span>
+                    </div>
+                    <div id="course-sql-list" class="sql-list">
+                        <div class="sql-item">Тут відображатиметься сирої SQL-код запиту після оновлення списку.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: GRADES & STUDENTS -->
+            <div id="grades-tab" class="content-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Оцінки студентів</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top:0.25rem;">
+                            Рівень 2 & 3: Ведення журналу успішності з оптимізацією select_related.
+                        </p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="fetchGrades()">🔄 Оновити</button>
+                </div>
+
+                <!-- Caching Performance Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">Джерело даних</span>
+                        <div id="grade-cache-status" class="metric-value info">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Кількість SQL-запитів до БД</span>
+                        <div id="grade-query-count" class="metric-value success">-</div>
+                    </div>
+                </div>
+
+                <div class="grid-layout">
+                    <!-- Grades Table -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Студент</th>
+                                    <th>Курс</th>
+                                    <th>Оцінка</th>
+                                    <th>Дата запису</th>
+                                    <th>Дія</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grades-table-body">
+                                <!-- Dynamically loaded -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Side Forms Column -->
+                    <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                        <!-- Add Student Form -->
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; margin-bottom:1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">Створити студента</h3>
+                            <form id="add-student-form" onsubmit="addStudent(event)">
+                                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                                    <div class="form-group">
+                                        <label for="student-first-name">Ім'я</label>
+                                        <input type="text" id="student-first-name" required placeholder="Ксенія">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="student-last-name">Прізвище</label>
+                                        <input type="text" id="student-last-name" required placeholder="Лебеденко">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="student-email">Email</label>
+                                        <input type="email" id="student-email" required placeholder="kseniya.lebedenko@nure.ua">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="student-enroll">Дата вступу</label>
+                                        <input type="date" id="student-enroll" required value="2023-09-01">
+                                    </div>
+                                    <button type="submit" class="btn" style="margin-top:0.5rem;">Додати</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Record Grade Form -->
+                        <div class="glass-card">
+                            <h3 style="font-size:1.1rem; margin-bottom:1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">Виставити оцінку</h3>
+                            <form id="record-grade-form" onsubmit="recordGrade(event)">
+                                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                                    <div class="form-group">
+                                        <label for="grade-student-select">Студент</label>
+                                        <select id="grade-student-select" required>
+                                            <option value="">Завантаження...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="grade-course-select">Курс</label>
+                                        <select id="grade-course-select" required>
+                                            <option value="">Завантаження...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="grade-score">Бал (0-100)</label>
+                                        <input type="number" step="0.1" id="grade-score" min="0" max="100" required placeholder="95.5">
+                                    </div>
+                                    <button type="submit" class="btn" style="margin-top:0.5rem;">Записати</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SQL inspector -->
+                <div class="sql-log-card">
+                    <div class="sql-header">
+                        <span class="sql-title">Аналізатор SQL-запитів журналу оцінок (Django ORM select_related('student', 'course'))</span>
+                        <span style="font-size:0.75rem; color: var(--text-secondary);">Завантажує пов'язані сутності в один запит замість N окремих</span>
+                    </div>
+                    <div id="grade-sql-list" class="sql-list">
+                        <div class="sql-item">Тут відображатиметься SQL після оновлення списку.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 3: TRANSACTIONS -->
+            <div id="transactions-tab" class="content-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Атомарні транзакції БД</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top:0.25rem;">
+                            Рівень 4: Перевірка цілісності даних за допомогою Django `transaction.atomic()`.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid-layout">
+                    <!-- Control panel card -->
+                    <div class="glass-card">
+                        <h3 style="font-size:1.15rem; margin-bottom: 0.75rem; color: var(--accent);">Тестування атомарного оновлення</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;">
+                            Припустимо, ми пакетно завантажуємо відомість оцінок студентів. Для дотримання цілісності, якщо бодай одна оцінка у списку виявиться невалідною (наприклад, оцінка менше 0 чи більше 100), <strong>всі попередні успішні операції з цього списку мають скасуватися (Rollback)</strong>.
+                        </p>
+                        
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem; border-radius: 8px;">
+                                <h4 style="color: var(--success); font-size: 0.95rem; margin-bottom: 0.5rem;">Кейс 1: Всі оцінки валідні (Commit)</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                                    Оцінки обох студентів буде успішно оновлено: Студент 1 отримає 99.0 балів, Студент 2 отримає 92.5 балів.
+                                </p>
+                                <button class="btn" onclick="runBulkTransaction(true)">Запустити успішну транзакцію</button>
+                            </div>
+
+                            <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); padding: 1rem; border-radius: 8px;">
+                                <h4 style="color: var(--danger); font-size: 0.95rem; margin-bottom: 0.5rem;">Кейс 2: Містить невалідну оцінку (Rollback)</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                                    Студент 1 має отримати 10.0 балів (валідно), але Студент 2 має оцінку -15.0 балів (невалідно!). Django здійснить відкат, тому оцінка Студента 1 залишиться без змін.
+                                </p>
+                                <button class="btn btn-danger" onclick="runBulkTransaction(false)">Запустити транзакцію з помилкою</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Console output logging -->
+                    <div class="glass-card" style="display:flex; flex-direction:column; gap:0.75rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="font-size:1.1rem;">Лог транзакції в реальному часі</h3>
+                            <button class="btn btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.75rem;" onclick="clearConsole()">Очистити</button>
+                        </div>
+                        <div id="tx-console" class="tx-log-console">
+                            <div class="tx-line">
+                                <span class="tx-time">[19:00:00]</span>
+                                <span class="tx-type-info">Консоль готова. Будь ласка, запустіть тест транзакції.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Component -->
+    <div id="toast" class="toast">
+        <span id="toast-message">Повідомлення</span>
+    </div>
+
+    <!-- JS SCRIPTS -->
+    <script>
+        // Tab switching
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // Display Toast
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.className = 'toast show ' + (isError ? 'toast-error' : 'toast-success');
+            document.getElementById('toast-message').innerText = message;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Write line to Tx Console
+        function logTx(message, type = 'info') {
+            const consoleEl = document.getElementById('tx-console');
+            const now = new Date();
+            const timeStr = `[${now.toTimeString().split(' ')[0]}]`;
+            
+            let typeClass = 'tx-type-info';
+            if (type === 'success') typeClass = 'tx-type-success';
+            if (type === 'danger') typeClass = 'tx-type-danger';
+            if (type === 'warn') typeClass = 'tx-type-warn';
+
+            const line = document.createElement('div');
+            line.className = 'tx-line';
+            line.innerHTML = `<span class="tx-time">${timeStr}</span><span class="${typeClass}">${message}</span>`;
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function clearConsole() {
+            document.getElementById('tx-console').innerHTML = '';
+            logTx('Консоль очищено. Очікування дій...');
+        }
+
+        // API Requests
+        let teachers = [];
+        let students = [];
+        let courses = [];
+
+        // Load courses
+        async function fetchCourses() {
+            try {
+                const response = await fetch('/api/courses/');
+                const data = await response.json();
+                
+                // Set metrics
+                const cacheStatus = document.getElementById('course-cache-status');
+                if (data.cached) {
+                    cacheStatus.innerHTML = '<span class="badge badge-cache-hit">Cache Hit (Кеш)</span>';
+                } else {
+                    cacheStatus.innerHTML = '<span class="badge badge-cache-miss">Cache Miss (База даних)</span>';
+                }
+                document.getElementById('course-query-count').innerText = data.cached ? "0" : data.query_count;
+                
+                // SQL log
+                const sqlList = document.getElementById('course-sql-list');
+                sqlList.innerHTML = '';
+                if (data.queries && data.queries.length > 0) {
+                    data.queries.forEach(sql => {
+                        const div = document.createElement('div');
+                        div.className = 'sql-item';
+                        div.innerText = sql;
+                        sqlList.appendChild(div);
+                    });
+                } else {
+                    sqlList.innerHTML = '<div class="sql-item" style="color:var(--text-secondary)">Жодних SQL-запитів до бази даних не було надіслано (дані зчитані з кешу пам\'яті).</div>';
+                }
+
+                // Grid list
+                const listEl = document.getElementById('courses-list');
+                listEl.innerHTML = '';
+                courses = data.courses;
+
+                if (courses.length === 0) {
+                    listEl.innerHTML = '<div style="grid-column:1/-1; padding: 2rem; text-align:center; color:var(--text-secondary);">Курси відсутні. Створіть курс або ініціалізуйте базу даних.</div>';
+                    return;
+                }
+
+                courses.forEach(c => {
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <div class="item-code">${c.code}</div>
+                        <div class="item-title">${c.title}</div>
+                        <div class="item-desc">${c.description || 'Опис відсутній для цього курсу.'}</div>
+                        <div class="item-meta">
+                            <span>Викладач: <strong>${c.teacher.name}</strong></span>
+                            <span class="badge" style="background: rgba(139, 92, 246, 0.1); color: var(--primary);">${c.teacher.department}</span>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+            } catch (err) {
+                console.error(err);
+                showToast("Помилка завантаження курсів", true);
+            }
+        }
+
+        // Load grades
+        async function fetchGrades() {
+            try {
+                const response = await fetch('/api/grades/');
+                const data = await response.json();
+                
+                // Set metrics
+                const cacheStatus = document.getElementById('grade-cache-status');
+                if (data.cached) {
+                    cacheStatus.innerHTML = '<span class="badge badge-cache-hit">Cache Hit (Кеш)</span>';
+                } else {
+                    cacheStatus.innerHTML = '<span class="badge badge-cache-miss">Cache Miss (База даних)</span>';
+                }
+                document.getElementById('grade-query-count').innerText = data.cached ? "0" : data.query_count;
+                
+                // SQL log
+                const sqlList = document.getElementById('grade-sql-list');
+                sqlList.innerHTML = '';
+                if (data.queries && data.queries.length > 0) {
+                    data.queries.forEach(sql => {
+                        const div = document.createElement('div');
+                        div.className = 'sql-item';
+                        div.innerText = sql;
+                        sqlList.appendChild(div);
+                    });
+                } else {
+                    sqlList.innerHTML = '<div class="sql-item" style="color:var(--text-secondary)">Жодних запитів до БД. Дані взяті із локального кешу.</div>';
+                }
+
+                // Table populate
+                const tbody = document.getElementById('grades-table-body');
+                tbody.innerHTML = '';
+                
+                if (data.grades.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-secondary);">Журнал оцінок порожній.</td></tr>';
+                    return;
+                }
+
+                data.grades.forEach(g => {
+                    let scoreClass = 'mid';
+                    if (g.score >= 90) scoreClass = 'high';
+                    else if (g.score < 60) scoreClass = 'low';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${g.student.name}</strong></td>
+                        <td>${g.course.code}: ${g.course.title}</td>
+                        <td><span class="score-pill ${scoreClass}">${g.score}</span></td>
+                        <td>${g.date_recorded}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="deleteGrade(${g.id})">Видалити</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                showToast("Помилка завантаження журналу оцінок", true);
+            }
+        }
+
+        // Delete individual grade
+        async function deleteGrade(gradeId) {
+            if (!confirm("Ви впевнені, що хочете видалити цей запис оцінки?")) return;
+            try {
+                const response = await fetch(`/api/grades/${gradeId}/`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    showToast("Оцінку видалено.");
+                    fetchGrades();
+                } else {
+                    showToast("Помилка при видаленні оцінки", true);
+                }
+            } catch(e) {
+                showToast("Помилка запиту", true);
+            }
+        }
+
+        // Load helper data (teachers and students) for forms
+        async function loadFormData() {
+            try {
+                // Load teachers
+                const teachResp = await fetch('/api/teachers/');
+                const teachData = await teachResp.json();
+                teachers = teachData.teachers;
+                
+                const teachSelect = document.getElementById('course-teacher');
+                teachSelect.innerHTML = '<option value="">Оберіть викладача...</option>';
+                teachers.forEach(t => {
+                    teachSelect.innerHTML += `<option value="${t.id}">${t.name} (${t.department})</option>`;
+                });
+
+                // Load students
+                const studResp = await fetch('/api/students/');
+                const studData = await studResp.json();
+                students = studData.students;
+
+                const studSelect = document.getElementById('grade-student-select');
+                studSelect.innerHTML = '<option value="">Оберіть студента...</option>';
+                students.forEach(s => {
+                    studSelect.innerHTML += `<option value="${s.id}">${s.first_name} ${s.last_name}</option>`;
+                });
+
+                // Load courses inside grade course select
+                const courseSelect = document.getElementById('grade-course-select');
+                courseSelect.innerHTML = '<option value="">Оберіть курс...</option>';
+                courses.forEach(c => {
+                    courseSelect.innerHTML += `<option value="${c.id}">${c.code} - ${c.title}</option>`;
+                });
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function loadGradesData() {
+            await fetchGrades();
+            await loadFormData();
+        }
+
+        // Add course
+        async function addCourse(e) {
+            e.preventDefault();
+            const title = document.getElementById('course-title').value;
+            const code = document.getElementById('course-code').value;
+            const teacherId = document.getElementById('course-teacher').value;
+            const description = document.getElementById('course-desc').value;
+
+            try {
+                const response = await fetch('/api/courses/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, code, teacher_id: teacherId, description })
+                });
+
+                if (response.ok) {
+                    showToast("Курс успішно створено!");
+                    document.getElementById('add-course-form').reset();
+                    fetchCourses();
+                } else {
+                    const err = await response.json();
+                    showToast(`Помилка: ${err.error}`, true);
+                }
+            } catch(err) {
+                showToast("Помилка запиту", true);
+            }
+        }
+
+        // Add student
+        async function addStudent(e) {
+            e.preventDefault();
+            const first_name = document.getElementById('student-first-name').value;
+            const last_name = document.getElementById('student-last-name').value;
+            const email = document.getElementById('student-email').value;
+            const enrollment_date = document.getElementById('student-enroll').value;
+
+            try {
+                const response = await fetch('/api/students/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name, last_name, email, enrollment_date })
+                });
+
+                if (response.ok) {
+                    showToast("Студента успішно створено!");
+                    document.getElementById('add-student-form').reset();
+                    await loadFormData();
+                } else {
+                    const err = await response.json();
+                    showToast(`Помилка: ${err.error}`, true);
+                }
+            } catch(err) {
+                showToast("Помилка запиту", true);
+            }
+        }
+
+        // Record single grade
+        async function recordGrade(e) {
+            e.preventDefault();
+            const studentId = document.getElementById('grade-student-select').value;
+            const courseId = document.getElementById('grade-course-select').value;
+            const score = document.getElementById('grade-score').value;
+
+            try {
+                const response = await fetch('/api/grades/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ student_id: studentId, course_id: courseId, score })
+                });
+
+                if (response.ok) {
+                    showToast("Оцінку успішно записано!");
+                    document.getElementById('record-grade-form').reset();
+                    loadGradesData();
+                } else {
+                    const err = await response.json();
+                    showToast(`Помилка: ${err.error}`, true);
+                }
+            } catch(err) {
+                showToast("Помилка запиту", true);
+            }
+        }
+
+        // Seed DB
+        async function seedDatabase() {
+            if (!confirm("Це очистить всі існуючі записи в базі даних та створить початкові дані. Продовжити?")) return;
+            try {
+                logTx("Ініціалізація бази даних розпочата...");
+                const response = await fetch('/api/seed/', { method: 'POST' });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast(data.message);
+                    logTx(data.message, 'success');
+                    // Reload UI data
+                    await fetchCourses();
+                    await loadFormData();
+                    if (document.getElementById('grades-tab').classList.contains('active')) {
+                        await fetchGrades();
+                    }
+                } else {
+                    showToast(data.error, true);
+                    logTx(data.error, 'danger');
+                }
+            } catch (err) {
+                showToast("Помилка запиту до API", true);
+                logTx("Помилка при з'єднанні з сервером.", 'danger');
+            }
+        }
+
+        // Level 4: Bulk Database Transaction Rollback Demonstration
+        async function runBulkTransaction(successCase) {
+            if (students.length < 2 || courses.length === 0) {
+                showToast("Спочатку ініціалізуйте базу даних тестовими даними!", true);
+                logTx("Помилка: Недостатньо даних для тесту транзакції. Будь ласка, натисніть 'Ініціалізувати БД'", 'warn');
+                return;
+            }
+
+            const student1 = students[0];
+            const student2 = students[1];
+            const course = courses[0];
+
+            let updates = [];
+            
+            if (successCase) {
+                updates = [
+                    { student_id: student1.id, course_id: course.id, score: 99.0 },
+                    { student_id: student2.id, course_id: course.id, score: 92.5 }
+                ];
+                logTx("Запуск УСПІШНОЇ транзакції: оновлюємо двох студентів (99.0 та 92.5 балів)...");
+            } else {
+                updates = [
+                    { student_id: student1.id, course_id: course.id, score: 10.0 }, // Valid score, but should be rolled back!
+                    { student_id: student2.id, course_id: course.id, score: -15.0 } // INVALID SCORE! Triggers exception.
+                ];
+                logTx("Запуск ТРАНЗАКЦІЇ З ПОМИЛКОЮ: оновлення Студента 1 (10.0 балів) та Студента 2 (-15.0 - невалідний бал!)...");
+            }
+
+            try {
+                const response = await fetch('/api/grades/bulk/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ updates })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast(data.message);
+                    logTx(`Транзакція Успішна: ${data.message}`, 'success');
+                    logTx("Зміни збережено в базу даних (Commit).", 'success');
+                } else {
+                    showToast(data.error, true);
+                    logTx(`Помилка: ${data.error}`, 'danger');
+                    logTx("Транзакція скасована. Всі зміни відкочено (Rollback). Оцінки залишилися незмінними!", 'warn');
+                }
+            } catch(e) {
+                logTx(`Помилка запиту: ${e.message}`, 'danger');
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            await fetchCourses();
+            await loadFormData();
+        });
+    </script>
+</body>
+</html>

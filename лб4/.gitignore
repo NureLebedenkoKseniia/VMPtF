@@ -1,0 +1,36 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Django local database
+db.sqlite3
+
+# Environments and dependencies
+.venv/
+venv/
+env/
+ENV/
+lib/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Reports and manuals (prevent committing reports & templates)
+*.docx
+*.pdf
+REPORT.md
+ЗВІТ_ЛБ4.md
+
+# IDE and editors config
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS temporary files
+.DS_Store
+Thumbs.db

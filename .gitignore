@@ -1,0 +1,50 @@
+# Reports (Keep locally, do not push to GitHub)
+*Лебеденко*.docx
+*Лебеденко*.pdf
+ЛБ*_ВМПтФ*.docx
+ЛБ*_ВМПтФ*.pdf
+ПЗ*_ВМПтФ*.docx
+ПЗ*_ВМПтФ*.pdf
+*Звіт*.docx
+*Звіт*.pdf
+
+# Temporary files (Word, Excel, etc.)
+~$*.docx
+~$*.doc
+~$*.xlsx
+~$*.xls
+~WRL*.tmp
+~WRF*.tmp
+~WRD*.tmp
+~$*
+~*
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Databases
+db.sqlite3
+
+# Node dependencies & builds
+node_modules/
+dist/
+
+# Android / Java builds
+.gradle/
+build/
+local.properties
+*.apk
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE / System configurations
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
