@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Зміна кольору тексту</title>
+    <style>
+        body {
+            background-color: #0f0f13;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        h1 {
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 12px 28px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Зміна кольору тексту кнопки</h1>
+        <button id="colorBtn">Натисни, щоб завантажити колір</button>
+    </div>
+
+    <script>
+        const button = document.getElementById('colorBtn');
+        button.addEventListener('click', () => {
+            fetch('1_color.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Помилка завантаження файлу');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    const data = JSON.parse(text); // Використовуємо JSON.parse() за завданням
+                    button.style.color = data.color;
+                    button.textContent = `Колір змінено на: ${data.color}`;
+                })
+                .catch(error => {
+                    console.error('Помилка:', error);
+                    button.textContent = 'Помилка завантаження!';
+                });
+        });
+    </script>
+</body>
+</html>

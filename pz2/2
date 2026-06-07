@@ -1,0 +1,74 @@
+import json
+import sys
+
+def print_tree(data, indent=0, prefix=""):
+    """
+    Рекурсивно виводить вкладену структуру JSON у вигляді дерева.
+    """
+    spacer = "    " * indent
+    if isinstance(data, dict):
+        print(f"{spacer}{prefix}{{Об'єкт з {len(data)} парами ключ-значення}}:")
+        for key, value in data.items():
+            print(f"{spacer}  |-- {key}:")
+            print_tree(value, indent + 1, "   ")
+    elif isinstance(data, list):
+        print(f"{spacer}{prefix}[Масив з {len(data)} елементів]:")
+        for i, item in enumerate(data):
+            print_tree(item, indent + 1, f"[{i}] ")
+    else:
+        # Примітивні типи даних
+        val_type = type(data).__name__
+        # Зробимо виведення типів українською
+        type_mapping = {
+            'str': 'рядок',
+            'int': 'ціле число',
+            'float': 'дійсне число',
+            'bool': 'булеве значення',
+            'NoneType': 'null'
+        }
+        ukr_type = type_mapping.get(val_type, val_type)
+        
+        if isinstance(data, str):
+            val_str = f'"{data}"'
+        elif data is None:
+            val_str = "null"
+        elif isinstance(data, bool):
+            val_str = "true" if data else "false"
+        else:
+            val_str = str(data)
+            
+        print(f"{spacer}{prefix}{val_str} ({ukr_type})")
+
+def main():
+    print("=================== JSON Parser Utility (Варіант 6) ===================")
+    
+    # Якщо аргумент передано через консоль
+    if len(sys.argv) > 1:
+        json_str = sys.argv[1]
+        print("Парсинг аргументу командного рядка...")
+    else:
+        print("Введіть ваш JSON рядок (або залиште пустим для тестового прикладу та натисніть Enter):")
+        try:
+            json_str = input()
+        except EOFError:
+            json_str = ""
+            
+    if not json_str.strip():
+        # Приклад за замовчуванням
+        json_str = '{"name": "Ксенія", "age": 20, "isStudent": true, "skills": ["Python", "JavaScript", "React"], "address": {"city": "Харків", "university": "ХНУРЕ"}}'
+        print("\n[Попередження] Пустий ввід. Використовується тестовий JSON:")
+        print(json_str)
+        print("-" * 70)
+        
+    try:
+        # Використання вбудованої функції для роботи з JSON
+        parsed_data = json.loads(json_str)
+        print("\nРезультат розбору (Деревоподібна структура):")
+        print("=" * 70)
+        print_tree(parsed_data)
+        print("=" * 70)
+    except json.JSONDecodeError as e:
+        print(f"\n[Помилка] Некоректний формат JSON: {e}")
+
+if __name__ == "__main__":
+    main()
