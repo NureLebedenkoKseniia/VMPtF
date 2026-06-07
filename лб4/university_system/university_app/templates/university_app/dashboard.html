@@ -698,24 +698,12 @@
                 <div class="panel-header">
                     <div>
                         <h2 class="panel-title">Університетські курси</h2>
-                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top:0.25rem;">
-                            Рівень 3: Кешування списку курсів (locmem) та Select Related оптимізація.
-                        </p>
                     </div>
                     <button class="btn btn-secondary" onclick="fetchCourses()">🔄 Оновити</button>
                 </div>
 
-                <!-- Caching Performance Metrics -->
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <span class="metric-label">Джерело даних</span>
-                        <div id="course-cache-status" class="metric-value info">-</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Кількість SQL-запитів до БД</span>
-                        <div id="course-query-count" class="metric-value success">-</div>
-                    </div>
-                </div>
+                <div id="course-cache-status" style="display: none;"></div>
+                <div id="course-query-count" style="display: none;"></div>
 
                 <div class="grid-layout">
                     <!-- Courses grid list -->
@@ -771,24 +759,12 @@
                 <div class="panel-header">
                     <div>
                         <h2 class="panel-title">Оцінки студентів</h2>
-                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top:0.25rem;">
-                            Рівень 2 & 3: Ведення журналу успішності з оптимізацією select_related.
-                        </p>
                     </div>
                     <button class="btn btn-secondary" onclick="fetchGrades()">🔄 Оновити</button>
                 </div>
 
-                <!-- Caching Performance Metrics -->
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <span class="metric-label">Джерело даних</span>
-                        <div id="grade-cache-status" class="metric-value info">-</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Кількість SQL-запитів до БД</span>
-                        <div id="grade-query-count" class="metric-value success">-</div>
-                    </div>
-                </div>
+                <div id="grade-cache-status" style="display: none;"></div>
+                <div id="grade-query-count" style="display: none;"></div>
 
                 <div class="grid-layout">
                     <!-- Grades Table -->
@@ -882,9 +858,6 @@
                 <div class="panel-header">
                     <div>
                         <h2 class="panel-title">Атомарні транзакції БД</h2>
-                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top:0.25rem;">
-                            Рівень 4: Перевірка цілісності даних за допомогою Django `transaction.atomic()`.
-                        </p>
                     </div>
                 </div>
 
